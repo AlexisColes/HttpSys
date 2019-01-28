@@ -1,8 +1,13 @@
+
 Function Get-UrlAcl {
     [CmdletBinding()] 
     Param( 
         [Parameter(Position=0)]
-        [string]$Url
+        [string]$Url,
+        [Parameter()]
+        [int[]]$Port,
+        [string]$HostName,
+        [string]$Protocol
     )
 
     $cmd = "netsh http show urlacl"
@@ -28,6 +33,21 @@ Function Get-UrlAcl {
         
         if($key -eq "Reserved Url"){
             $item = [UrlAcl]::new()
+            $protocolSplitIndex = $value.IndexOf("://");
+            $item.Protocol = $value.Substring(0, $protocolSplitIndex)
+            $remainder = $value.Substring($protocolSplitIndex + 3)
+
+            $pathSplitIndex = $remainder.IndexOf("/")
+
+            $hostDetails = $remainder.Substring(0, $pathSplitIndex)
+            
+            $hostParts = $hostDetails.Split(':')
+
+            $item.Host = $hostParts[0]
+            $item.Port = $hostParts[1]
+
+            $item.Path = $remainder.Substring($pathSplitIndex)
+
             $item.Url = $value
             $items += $item
         }
@@ -46,12 +66,32 @@ Function Get-UrlAcl {
             $user.SSDL = $value
         }
     }
+    if(-not [string]::IsNullOrWhiteSpace($HostName)){
+        $items = $items | Where-Object { $_.Host -eq $HostName }
+    }
+    if(-not [string]::IsNullOrWhiteSpace($Protocol)){
+        $items = $items | Where-Object { $_.Protocol -eq $Protocol }
+    }
+
+    if($null -ne $Port){
+        if($Port -isnot [System.Array]){
+            $Port = @($Port)
+        }
+        if($Port.Length -ge 0){
+            $items = $items | Where-Object { $Port -contains $_.Port }
+        }
+    }
+
     return $items
 }
 
 Class UrlAcl{
+    [string]$Protocol
+    [string]$Host
+    [int]$Port    
+    [string]$Path
     [string]$Url
-    [UrlAclUser[]]$Users
+    [UrlAclUser[]]$Users    
 }
 Class UrlAclUser{
     [string]$Name
