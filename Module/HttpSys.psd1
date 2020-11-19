@@ -12,7 +12,7 @@
 RootModule = 'HttpSys.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.0.2'
 
 # ID used to uniquely identify this module
 GUID = 'dc6db6aa-9f02-4f9c-bf58-8c15ec06588c'
