@@ -52,6 +52,10 @@ DscResourcesToExport = @(
 
 PrivateData = @{
 		PSData = @{
+            # The web address of this module's project or support homepage.
+			ProjectUri   = "https://github.com/AlexisColes/HttpSys"
+			
+            ReleaseNotes = 'https://github.com/AlexisColes/HttpSys/releases/tag/1.0.2'
 		}
 	}
 }
