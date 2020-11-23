@@ -35,7 +35,9 @@ FunctionsToExport = '*'
 # Cmdlets to export from this module
 
 CmdletsToExport = @(
-	'Get-UrlAcl'
+	'Get-UrlAcl',
+	'New-UrlAcl',
+	'Remove-UrlAcl'
 )
 
 # Variables to export from this module
