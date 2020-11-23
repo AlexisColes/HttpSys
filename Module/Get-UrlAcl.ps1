@@ -6,9 +6,18 @@ Function Get-UrlAcl {
         [string]$Url,
         [Parameter()]
         [int[]]$Port,
+        [Parameter()]
         [string]$HostName,
-        [string]$Protocol
+        [Parameter()]
+        [string]$Protocol,
+        [Parameter()]
+        [string]$Path
     )
+
+    if($Protocol) { $Protocol = $Protocol.Trim() }
+    if($HostName) { $HostName = $HostName.Trim() }
+    if($Path) { $Path = $Path.Trim() }
+    if($SecurityContext) { $SecurityContext = $SecurityContext.Trim() }
 
     $cmd = "netsh http show urlacl"
     if(-not [string]::IsNullOrWhiteSpace($Url)){
@@ -20,7 +29,7 @@ Function Get-UrlAcl {
     $result = $result | Select-Object -Skip 4
 
     $items = @()
-    $item = [UrlAcl]::new()
+    $item = [UrlAclDto]::new()
     $user = [UrlAclUser]::new()
     for($i = 0; $i -lt $result.Length;$i++){
         $line = $result[$i]
@@ -32,7 +41,7 @@ Function Get-UrlAcl {
         $value = $line.Substring($splitIndex +2);
         
         if($key -eq "Reserved Url"){
-            $item = [UrlAcl]::new()
+            $item = [UrlAclDto]::new()
             $protocolSplitIndex = $value.IndexOf("://");
             $item.Protocol = $value.Substring(0, $protocolSplitIndex)
             $remainder = $value.Substring($protocolSplitIndex + 3)
@@ -46,7 +55,7 @@ Function Get-UrlAcl {
             $item.Host = $hostParts[0]
             $item.Port = $hostParts[1]
 
-            $item.Path = $remainder.Substring($pathSplitIndex)
+            $item.Path = $remainder.Substring($pathSplitIndex).Trim()
 
             $item.Url = $value
             $items += $item
@@ -81,11 +90,14 @@ Function Get-UrlAcl {
             $items = $items | Where-Object { $Port -contains $_.Port }
         }
     }
+    if(-not [string]::IsNullOrWhiteSpace($Path)){
+        $items = $items | Where-Object { $_.Path.Trim() -eq $Path.Trim() }
+    }
 
     return $items
 }
 
-Class UrlAcl{
+Class UrlAclDto{
     [string]$Protocol
     [string]$Host
     [int]$Port    

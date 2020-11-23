@@ -12,7 +12,7 @@
 RootModule = 'HttpSys.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.0.2'
 
 # ID used to uniquely identify this module
 GUID = 'dc6db6aa-9f02-4f9c-bf58-8c15ec06588c'
@@ -54,6 +54,10 @@ DscResourcesToExport = @(
 
 PrivateData = @{
 		PSData = @{
+            # The web address of this module's project or support homepage.
+			ProjectUri   = "https://github.com/AlexisColes/HttpSys"
+			
+            ReleaseNotes = 'https://github.com/AlexisColes/HttpSys/releases/tag/1.0.2'
 		}
 	}
 }

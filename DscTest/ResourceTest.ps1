@@ -1,7 +1,6 @@
-. $PSScriptRoot\Get-UrlAcl.ps1
-. $PSScriptRoot\Remove-UrlAcl.ps1
-. $PSScriptRoot\New-UrlAcl.ps1
-#. $PSScriptRoot\UrlAclDsc.ps1
+. $PSScriptRoot\..\Module\Get-UrlAcl.ps1
+. $PSScriptRoot\..\Module\Remove-UrlAcl.ps1
+. $PSScriptRoot\..\Module\New-UrlAcl.ps1
 
 [DscResource()]
 class UrlAcl {
@@ -73,9 +72,11 @@ class UrlAcl {
         {
             $url = $this.FormatUrl($this.Protocol, $this.HostName, $p, $this.Path)
 
+            Write-Verbose "Finding $url"
             $acl = Get-UrlAcl -Url $url
 
             if($null -ne $acl){
+                Write-Verbose "Removing $url"
                 $acl | Remove-UrlAcl
             }
 
@@ -84,6 +85,18 @@ class UrlAcl {
     }
     
     [string]FormatUrl([string]$protocol, [string]$hostName, [string]$port, [string]$path){
+        Write-Verbose "Formatting"
         return "$($protocol.Trim())://$($hostName.Trim()):$($port.Trim())$($path.Trim())"
     }
 }
+
+$VerbosePreference = "Continue"
+
+$resource = [UrlAcl]::new()
+
+$resource.Protocol = "http"
+$resource.Hostname = "*"
+$resource.Port = "5357"
+$resource.SecurityContext = "BUILTIN\Users,NT AUTHORITY\LOCAL SERVICE"
+
+$resource.Test()

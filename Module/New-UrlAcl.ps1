@@ -14,6 +14,11 @@ Function New-UrlAcl {
         [string]$SecurityContext
     )
 
+    if($Protocol) { $Protocol = $Protocol.Trim() }
+    if($HostName) { $HostName = $HostName.Trim() }
+    if($Path) { $Path = $Path.Trim() }
+    if($SecurityContext) { $SecurityContext = $SecurityContext.Trim() }
+
     if($UrlAcl -isnot [System.Array]){
         $UrlAcl = @($UrlAcl)
     }
